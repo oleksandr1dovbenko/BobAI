@@ -38,11 +38,13 @@ inputs = tokenizer.apply_chat_template(
     tokenize=True,
     add_generation_prompt=True,
     return_tensors="pt",
+    return_dict=True,
 ).to(device)
 
 # 3. Generate the response
 outputs = model.generate(
-    input_ids=inputs,
+    input_ids=inputs["input_ids"],
+    attention_mask=inputs["attention_mask"],
     max_new_tokens=256,
     temperature=0.6,
     top_p=0.9,
@@ -51,7 +53,7 @@ outputs = model.generate(
 )
 
 # Trim off the prompt tokens and decode only model's response
-generated_tokens = outputs[0][inputs.shape[1]:]
+generated_tokens = outputs[0][inputs["input_ids"].shape[1]:]
 response = tokenizer.decode(generated_tokens, skip_special_tokens=True)
 
 print("\n=== BobAI's response ===\n")
