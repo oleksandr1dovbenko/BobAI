@@ -34,6 +34,7 @@ tempCodeRunnerFile.py
 *.safetensors
 *.engine
 *.tflite
+*.gguf
 /dataset/
 /datasets/
 /data/
@@ -41,8 +42,9 @@ tempCodeRunnerFile.py
 
 # --- Weights and cache ---
 training/bobai_dpo_v1/
+training/bobai_dpo_v1_gguf/
 training/outputs_dpo/
-training/unsloth_compiled_cache/
+unsloth_compiled_cache/
 
 # --- Marimo ---
 marimo/_static/
