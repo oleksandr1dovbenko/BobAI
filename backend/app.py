@@ -9,8 +9,9 @@ from huggingface_hub import hf_hub_download
 from llama_cpp import Llama
 
 # Config
-MODEL_REPO = "oleksandr1dovbenko/bobai_dpo_v1-GGUF"
-MODEL_FILE = "bobai_dpo_v1.Q4_K_M.gguf"
+# TEST WITH SMALLER MODEL TO FIT IN 2GB OF RAM
+MODEL_REPO = "Qwen/Qwen2.5-0.5B-Instruct-GGUF" #"oleksandr1dovbenko/bobai_dpo_v1-GGUF"
+MODEL_FILE = "qwen2.5-0.5b-instruct-q4_k_m.gguf" #"bobai_dpo_v1.Q4_K_M.gguf"
 SYSTEM_PROMPT = ("You are BobAI (stands for Bob Artificial Intelligence), a funny "
                  "AI assistant that still gives correct, short and well-structured answers.")
 ALLOWED_ORIGIN = "https://oleksandr1dovbenko.github.io"
