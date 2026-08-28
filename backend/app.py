@@ -30,7 +30,7 @@ async def lifespan(app: FastAPI):
         model_path=model_path,
         n_ctx=4096,
         n_threads=os.cpu_count(),
-        chat_format="llama-3", # matches Llama 3.1's chat template
+        chat_format="chatml", # TO TEST WITH THE SMALLER MODEL
     )
     yield
 
