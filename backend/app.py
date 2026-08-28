@@ -28,8 +28,8 @@ async def lifespan(app: FastAPI):
     )
     llm = Llama(
         model_path=model_path,
-        n_ctx=4096,
-        n_threads=os.cpu_count(),
+        n_ctx=512, # instead of 4096
+        n_threads=2,
         chat_format="chatml", # TO TEST WITH THE SMALLER MODEL
     )
     yield
@@ -58,8 +58,9 @@ def chat(req: ChatRequest):
 
     result = llm.create_chat_completion(
         messages=messages,
-        max_tokens=512,
+        max_tokens=64, # instead of 512
         temperature=0.6,
+        stop=["<|im_end|>", "<|endoftext|>"], # stop tokens for Qwen
     )
     reply = result["choices"][0]["message"]["content"]
     return {"response": reply}
