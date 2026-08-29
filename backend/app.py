@@ -30,7 +30,6 @@ async def lifespan(app: FastAPI):
         model_path=model_path,
         n_ctx=512, # instead of 4096
         n_threads=2,
-        chat_format="chatml", # TO TEST WITH THE SMALLER MODEL
     )
     yield
 
