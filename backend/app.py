@@ -52,18 +52,21 @@ class ChatRequest(BaseModel):
 
 @app.post("/chat")
 def chat(req: ChatRequest):
-    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
-    messages += req.history
-    messages.append({"role": "user", "content": req.message})
+    try:
+        messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+        messages += req.history
+        messages.append({"role": "user", "content": req.message})
 
-    result = llm.create_chat_completion(
-        messages=messages,
-        max_tokens=64, # instead of 512
-        temperature=0.6,
-        stop=["<|im_end|>", "<|endoftext|>"], # stop tokens for Qwen
-    )
-    reply = result["choices"][0]["message"]["content"]
-    return {"response": reply}
+        result = llm.create_chat_completion(
+            messages=messages,
+            max_tokens=64, # instead of 512
+            temperature=0.6,
+            stop=["<|im_end|>", "<|endoftext|>"], # stop tokens for Qwen
+        )
+        reply = result["choices"][0]["message"]["content"]
+        return {"response": reply}
+    except Exception as e:
+        return {"response": f"[Error] {type(e).__name__}: {e}"}
 
 
 @app.get("/")
