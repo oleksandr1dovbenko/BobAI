@@ -5,31 +5,25 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from huggingface_hub import hf_hub_download
-from llama_cpp import Llama
+from openai import AsyncOpenAI
+HACKCLUB_API_KEY = os.environ["HACKCLUB_API_KEY"]
+OPENAI_API_URL = os.environ["OPENAI_API_URL"]
 
 # Config
-# TEST WITH SMALLER MODEL TO FIT IN 2GB OF RAM
-MODEL_REPO = "Qwen/Qwen2.5-0.5B-Instruct-GGUF" #"oleksandr1dovbenko/bobai_dpo_v1-GGUF"
-MODEL_FILE = "qwen2.5-0.5b-instruct-q4_k_m.gguf" #"bobai_dpo_v1.Q4_K_M.gguf"
+MODEL = "qwen/qwen3-32b"
 SYSTEM_PROMPT = ("You are BobAI (stands for Bob Artificial Intelligence), a funny "
                  "AI assistant that still gives correct, short and well-structured answers.")
 ALLOWED_ORIGIN = "https://oleksandr1dovbenko.github.io"
 
-llm: Llama | None = None
+client: AsyncOpenAI | None = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global llm
-    model_path = hf_hub_download(
-        repo_id=MODEL_REPO,
-        filename=MODEL_FILE,
-    )
-    llm = Llama(
-        model_path=model_path,
-        n_ctx=512, # instead of 4096
-        n_threads=2,
+    global client
+    client = AsyncOpenAI(
+        base_url=OPENAI_API_URL,
+        api_key=HACKCLUB_API_KEY,
     )
     yield
 
@@ -50,19 +44,19 @@ class ChatRequest(BaseModel):
 
 
 @app.post("/chat")
-def chat(req: ChatRequest):
-    try:
-        messages = [{"role": "system", "content": SYSTEM_PROMPT}]
-        messages += req.history
-        messages.append({"role": "user", "content": req.message})
+async def chat(req: ChatRequest):
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    messages += req.history
+    messages.append({"role": "user", "content": req.message})
 
-        result = llm.create_chat_completion(
+    try:
+        completion = await client.chat.completions.create(
+            model=MODEL,
             messages=messages,
-            max_tokens=64, # instead of 512
+            max_tokens=512,
             temperature=0.6,
-            stop=["<|im_end|>", "<|endoftext|>"], # stop tokens for Qwen
         )
-        reply = result["choices"][0]["message"]["content"]
+        reply = completion.choices[0].message.content
         return {"response": reply}
     except Exception as e:
         return {"response": f"[Error] {type(e).__name__}: {e}"}

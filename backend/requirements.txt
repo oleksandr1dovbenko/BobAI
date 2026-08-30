@@ -1,5 +1,4 @@
+openai
 fastapi
-uvicorn[standart]
-llama-cpp-python
-huggingface-hub
+uvicorn[standard]
 pydantic
