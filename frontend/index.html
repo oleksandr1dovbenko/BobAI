@@ -164,6 +164,43 @@
             white-space: pre-wrap;
         }
 
+        /* markdown content from the bot (headings, lists, code, etc.) */
+        .msg.bob p {
+            margin: 0 0 8px;
+        }
+
+        .msg.bob p:last-child {
+            margin-bottom: 0;
+        }
+
+        .msg.bob ul, .msg.bob ol {
+            margin: 0 0 8px;
+            padding-left: 20px;
+        }
+
+        .msg.bob code {
+            background: var(--panel-2);
+            border-radius: 4px;
+            padding: 1px 5px;
+            font-size: 13px;
+        }
+
+        .msg.bob pre {
+            background: var(--panel-2);
+            border-radius: 8px;
+            padding: 10px 12px;
+            overflow-x: auto;
+        }
+
+        .msg.bob pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .msg.bob a {
+            color: var(--accent);
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -261,7 +298,7 @@
             -webkit-clip-path: circle(150% at 50% 50%);
             clip-path: circle(150% at 50% 50%);
             transition: -webkit-clip-path .9s cubic-bezier(.65, 0, .35, 1),
-                        clip-path .9s cubic-bezier(.65, 0, .35, 1);
+            clip-path .9s cubic-bezier(.65, 0, .35, 1);
             will-change: clip-path;
         }
 
@@ -310,8 +347,12 @@
         }
 
         @keyframes nudge {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-3px);
+            }
         }
 
         .welcome-footer {
@@ -338,16 +379,25 @@
             .msg, .avatar::after {
                 animation: none;
             }
+
             .welcome {
                 transition: opacity .3s ease;
             }
+
             .welcome.closing {
                 -webkit-clip-path: circle(150% at 50% 50%);
                 clip-path: circle(150% at 50% 50%);
                 opacity: 0;
             }
+
             .enter-btn {
                 animation: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            textarea {
+                font-size: 16px;
             }
         }
     </style>
@@ -391,6 +441,11 @@
     </form>
 </div>
 
+<!-- markdown rendering for bot replies: marked parses **bold**/lists/code,
+     DOMPurify strips anything unsafe before it hits innerHTML -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+
 <script>
     const API_URL = "https://oleksandrdovbenko1.hackclub.app/chat";
 
@@ -432,10 +487,19 @@
     // let the GitHub link on the welcome screen open normally, without also triggering the reveal
     ghWelcomeLink.addEventListener('click', (e) => e.stopPropagation());
 
+    // turns "**bold**", lists, code, etc. into safe HTML
+    function renderMarkdown(text) {
+        return DOMPurify.sanitize(marked.parse(text));
+    }
+
     function addMessage(role, text) {
         const div = document.createElement('div');
         div.className = 'msg ' + role;
-        div.textContent = text;
+        if (role === 'bob') {
+            div.innerHTML = renderMarkdown(text);
+        } else {
+            div.textContent = text;
+        }
         messagesEl.appendChild(div);
         messagesEl.scrollTop = messagesEl.scrollHeight;
         return div;
@@ -478,7 +542,7 @@
             if (!res.ok) throw new Error('Server responded with ' + res.status);
 
             const data = await res.json();
-            thinkingMsg.textContent = data.response;
+            thinkingMsg.innerHTML = renderMarkdown(data.response);
             history.push({role: 'assistant', content: data.response});
 
         } catch (err) {
