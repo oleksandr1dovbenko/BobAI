@@ -49,10 +49,18 @@
         header {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 12px;
             padding: 20px 20px 16px;
             border-bottom: 1px solid var(--panel-2);
             flex-shrink: 0;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
         }
 
         .avatar {
@@ -109,6 +117,32 @@
             margin: 2px 0 0;
             font-size: 12.5px;
             color: var(--text-muted);
+        }
+
+        .gh-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1.5px solid var(--accent);
+            border-radius: 999px;
+            padding: 6px 12px;
+            color: var(--accent);
+            text-decoration: none;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 12.5px;
+            flex-shrink: 0;
+            transition: background .2s;
+        }
+
+        .gh-badge:hover {
+            background: var(--accent-dim);
+        }
+
+        .gh-badge svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
         }
 
         .messages {
@@ -208,8 +242,111 @@
             cursor: default;
         }
 
+        /* Welcome screen */
+        .welcome {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-align: center;
+            padding: 32px;
+            background: var(--bg);
+            background-image: radial-gradient(circle at 12% 15%, rgba(176, 130, 79, 0.12), transparent 40%),
+            radial-gradient(circle at 88% 80%, rgba(176, 130, 79, 0.1), transparent 45%);
+            cursor: pointer;
+            -webkit-clip-path: circle(150% at 50% 50%);
+            clip-path: circle(150% at 50% 50%);
+            transition: -webkit-clip-path .9s cubic-bezier(.65, 0, .35, 1),
+                        clip-path .9s cubic-bezier(.65, 0, .35, 1);
+            will-change: clip-path;
+        }
+
+        .welcome.closing {
+            -webkit-clip-path: circle(0% at var(--cx, 50%) var(--cy, 50%));
+            clip-path: circle(0% at var(--cx, 50%) var(--cy, 50%));
+            pointer-events: none;
+        }
+
+        .welcome-mark {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: var(--panel);
+            border: 1.5px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 28px;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .welcome h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 34px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin: 0;
+        }
+
+        .welcome p {
+            max-width: 320px;
+            color: var(--text-muted);
+            font-size: 14.5px;
+            line-height: 1.6;
+            margin: 4px 0 0;
+        }
+
+        .enter-btn {
+            margin-top: 16px;
+            padding: 11px 28px;
+            animation: nudge 2.4s ease-in-out infinite;
+        }
+
+        @keyframes nudge {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        .welcome-footer {
+            margin-top: 26px;
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+        }
+
+        .welcome-footer:hover {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        @media (max-width: 420px) {
+            .welcome h2 {
+                font-size: 27px;
+            }
+        }
+
         @media (prefers-reduced-motion: reduce) {
             .msg, .avatar::after {
+                animation: none;
+            }
+            .welcome {
+                transition: opacity .3s ease;
+            }
+            .welcome.closing {
+                -webkit-clip-path: circle(150% at 50% 50%);
+                clip-path: circle(150% at 50% 50%);
+                opacity: 0;
+            }
+            .enter-btn {
                 animation: none;
             }
         }
@@ -217,13 +354,31 @@
 </head>
 <body>
 
+<div class="welcome" id="welcome">
+    <div class="welcome-mark">B</div>
+    <h2>Hey, I'm BobAI.</h2>
+    <p>Ask me anything — jokes, questions, whatever's on your mind. Click anywhere to jump in.</p>
+    <button class="enter-btn" id="enter-btn" type="button">Start chatting</button>
+    <a class="welcome-footer" id="gh-welcome-link" href="https://github.com/oleksandr1dovbenko/BobAI"
+       target="_blank" rel="noopener">Made by oleksandr1dovbenko.<br>See the code on GitHub.</a>
+</div>
+
 <div class="app">
     <header>
-        <div class="avatar" id="avatar">B</div>
-        <div>
-            <h1>BobAI</h1>
-            <p>fine-tuned Llama 3.1</p>
+        <div class="header-info">
+            <div class="avatar" id="avatar">B</div>
+            <div>
+                <h1>BobAI</h1>
+                <p>your friendly AI assistant</p>
+            </div>
         </div>
+        <a class="gh-badge" href="https://github.com/oleksandr1dovbenko/BobAI" target="_blank" rel="noopener">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path fill-rule="evenodd"
+                      d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+            </svg>
+            GitHub
+        </a>
     </header>
 
     <div class="messages" id="messages">
@@ -247,6 +402,36 @@
 
     let history = []; // { role: "user" | "assistant", content: string }
 
+    // --- Welcome screen: click-to-enter circular reveal ---
+    const welcome = document.getElementById('welcome');
+    const enterBtn = document.getElementById('enter-btn');
+    const ghWelcomeLink = document.getElementById('gh-welcome-link');
+
+    function revealApp(x, y) {
+        welcome.style.setProperty('--cx', x + 'px');
+        welcome.style.setProperty('--cy', y + 'px');
+        welcome.classList.add('closing');
+        welcome.addEventListener('transitionend', () => {
+            welcome.style.display = 'none';
+            input.focus();
+        }, {once: true});
+        // Safety net in case the transition never fires (e.g. reduced motion, older browsers)
+        setTimeout(() => {
+            welcome.style.display = 'none';
+        }, 1000);
+    }
+
+    welcome.addEventListener('click', (e) => revealApp(e.clientX, e.clientY));
+
+    enterBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const rect = enterBtn.getBoundingClientRect();
+        revealApp(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    });
+
+    // let the GitHub link on the welcome screen open normally, without also triggering the reveal
+    ghWelcomeLink.addEventListener('click', (e) => e.stopPropagation());
+
     function addMessage(role, text) {
         const div = document.createElement('div');
         div.className = 'msg ' + role;
@@ -260,6 +445,13 @@
     input.addEventListener('input', () => {
         input.style.height = 'auto';
         input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+    });
+
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            form.requestSubmit();
+        }
     });
 
     form.addEventListener('submit', async (e) => {
