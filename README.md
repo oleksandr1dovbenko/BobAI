@@ -1,53 +1,57 @@
-<h1 align="center">🤖 BobAI</h1>
+<h1 align="center"> 🤖 BobAI </h1>
 
-<p align="center">
-  <a>
-    <img src="https://img.shields.io/badge/Try_BobAI_Here!-success?style=for-the-badge&logo=github" alt="Live Demo">
-  </a>
-</p>
+> **BobAI** is your fun, website based AI chatbot.
 
-> **BobAI** is a fun, intelligent AI assistant built for my website and powered by the HCAI API.
+## Why I made it?
 
-<p align="center">
-  <b><a href="https://oleksandr1dovbenko.github.io/BobAI/">Click here to try BobAI now!</a></b>
-</p>
+The reason I made BobAI is that I've always wanted to build LLM chatbot myself, since I've been learning ML for more
+than a year now.
 
----
+## Project features
 
-## 📖 The Backstory
+BobAI lives on a [website](https://oleksandr1dovbenko.github.io/BobAI/). On this website you can go to my GitHub
+repository or try BobAI out.
 
-I finally started this project thanks to **Hack Club** and their **Stardance** event. I've wanted to build something like this for a long time, but something was always holding me back. This event gave me the perfect reason to just go for it.
+### Bot features
 
----
+- AI chatbot like **ChatGPT**, **Gemini**, **Claude**, **...**
+- Main language: English
+- Answers almost all your questions
+- Web-search tool, to check real-time information
 
-## Architecture Evolution
+## Architecture
 
-Building **BobAI** went through three different architectures to find the right balance between memory limits, hosting availability, and response speed.
+Building BobAI went through 3 different project architectures. Here are all of them:
 
-### 1️⃣ First Plan: Fine-Tuned Model hosted on Hugging Face
+### First: Fine-tuned model hosted on Hugging Face
 
-* **Model:** Fine-tuned **Meta Llama 3.1 8B** using the **UltraFeedback** dataset to fit my exact needs.
-* **Hosting Idea:** Wanted to host a FastAPI backend with a GGUF model on Hugging Face Spaces, but free Docker containers were discontinued.
+- Model: **Llama 3.1 8B** using **UltraFeedback** dataset to fine-tune it
+- Hosting: In GGUF format on HF
+- Problem: Hugging Face discontinued any free containers 
+(I also tried Oracle Cloud, but couldn't complete registration)
 
-### 2️⃣ Second Plan: Hack Club Nest + Custom Model
+### Second: Fine-tuned model hosted on Nest
 
-* **Hosting Idea (Nest):** Switched to **Hack Club Nest** to host the Python backend with the local model.
-* **The Problem:** Running the fine-tuned model required at least 5 GB of RAM. My application for 6 GB was declined due to server resource exhaustion, making it impossible to host the custom fine-tuned model on this setup.
+- Model: The exact same model
+- Hosting: In GGUF format on Hack Club Nest
+- Problem: Nest gives only 2GB of RAM and only 2 CPU cores, my model weights roughly 6 GB and my request for more RAM
+  was rejected
 
-### 3️⃣ Current Architecture
+### Final: HCAI API
 
-To provide smooth performance without expensive hosting services, I decided to build the backend using the HCAI API.
+- Model: **Gemini 2.5 Flash**
+- Hosting: Light script on Hack Club Nest
+- Result: Solved all the problems with RAM and cores
+
+#### How does it work?
 
 ```mermaid
-flowchart LR
-    A([Visitor's Browser]) <--> B[GitHub Pages<br>Static HTML/CSS/JS]
-    B <--> C[(Hack Club Nest<br>HCAI + OpenRouter API)]
+graph LR;
+    A([User's Browser]) <--> B([GitHub Pages + HTML/CSS/JS]);
+    B([GitHub Pages + HTML/CSS/JS]) <--> C[(Nest + HCAI)];
 ```
 
-BobAI's current architecture, not the initial plan.
+## How I made it?
 
----
-
-## 🎨 Frontend & Design
-
-I am thankful to Claude for helping me build the user interface of this project. To be completely honest, without Claude's assistance, the website would have been empty, boring, and ugly!
+I fine-tuned the model on my own with Unsloth and its documentation. I wrote the frontend with Claude's help and used it
+less for the backend.
