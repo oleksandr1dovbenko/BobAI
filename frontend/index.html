@@ -5,9 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BobAI</title>
     <style>
+        :root {
+            --cream: #f4ead9;
+            --cream-light: antiquewhite;
+            --accent: #b0824f;
+            --accent-dark: #96703f;
+            --accent-light: #c99a63;
+            --text-dark: #6b5a48;
+            --text-muted: #8a7461;
+            --text-body: #4a3d30;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4ead9;
+            background: radial-gradient(circle at 30% 20%, #faf3e6, var(--cream) 65%);
             margin: 0;
             padding: 40px 20px;
         }
@@ -23,33 +34,42 @@
             width: 70px;
             height: 70px;
             border-radius: 50%;
-            background-color: antiquewhite;
-            border: 2px solid #b0824f;
-            color: #b0824f;
+            background: linear-gradient(135deg, var(--cream-light), #f1e2c8);
+            border: 2px solid var(--accent);
+            color: var(--accent-dark);
             font-size: 28px;
             font-weight: bold;
             text-align: center;
             line-height: 66px;
             margin: 0 auto 15px auto;
+            box-shadow: 0 6px 16px rgba(176, 130, 79, 0.25);
         }
 
         #welcome h1 {
             font-size: 32px;
+            color: var(--text-body);
         }
 
         #welcome p {
-            color: #6b5a48;
+            color: var(--text-dark);
         }
 
         #welcome button {
-            background-color: #b0824f;
-            color: antiquewhite;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
++           color: var(--cream-light);
             border: none;
             padding: 12px 26px;
             font-size: 16px;
             border-radius: 8px;
             cursor: pointer;
             margin-top: 20px;
+            box-shadow: 0 4px 14px rgba(176, 130, 79, 0.35);
+            transition: background 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #welcome button:hover {
+            background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+            box-shadow: 0 6px 18px rgba(176, 130, 79, 0.45);
         }
 
         #github-link {
@@ -58,47 +78,56 @@
         }
 
         #github-link a {
-            color: #6b5a48;
+            color: var(--text-dark);
+            transition: color 0.2s ease;
+        }
+
+        #github-link a:hover {
+            color: var(--accent-dark);
         }
 
         #chat-app {
             display: none;
             max-width: 500px;
             margin: 0 auto;
-            background-color: antiquewhite;
+            background-color: var(--cream-light);
             border-radius: 10px;
-            border: 1px solid #ddd;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(176, 130, 79, 0.2);
+            box-shadow: 0 10px 30px rgba(176, 130, 79, 0.22), 0 2px 8px rgba(107, 90, 72, 0.08);
+            overflow: hidden;
         }
 
         #chat-header {
             padding: 15px;
-            border-bottom: 1px solid #eee;
+            background: linear-gradient(180deg, #f8f0e0, var(--cream-light));
+            border-bottom: 1px solid rgba(176, 130, 79, 0.18);
         }
 
         #chat-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background-color: #f4ead9;
-            border: 2px solid #b0824f;
-            color:#b0824f;
+            background: linear-gradient(135deg, var(--cream), #ecd9b8);
+            border: 2px solid var(--accent);
+            color: var(--accent-dark);
             font-weight: bold;
             text-align: center;
             line-height: 36px;
             float: left;
             margin-right: 10px;
+            box-shadow: 0 3px 8px rgba(176, 130, 79, 0.25);
         }
 
         #chat-header h2 {
             margin: 0;
             font-size: 16px;
+            color: var(--text-body);
         }
 
         #chat-header p {
             margin: 2px 0 0;
             font-size: 13px;
-            color: #8a7461;
+            color: var(--text-muted);
         }
 
         #messages {
@@ -113,39 +142,67 @@
             padding: 10px;
             border-radius: 10px;
             max-width: 80%;
+            color: var(--text-body);
         }
 
         .bob-message {
-            background-color: #f4ead9;
-            border: 1px solid #b0824f;
+            background-color: var(--cream);
+            border: 1px solid rgba(176, 130, 79, 0.35);
+            box-shadow: 0 2px 6px rgba(176, 130, 79, 0.1);
         }
 
         .user-message {
-            background-color: #b0824f;
-            color: antiquewhite;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: var(--cream-light);
             margin-left: auto;
+            box-shadow: 0 3px 10px rgba(176, 130, 79, 0.3);
         }
 
         #chat-form{
             padding: 15px;
-            border-top: 1px solid #eee;
+            border-top: 1px solid rgba(176, 130, 79, 0.18);
         }
 
-        #user-input {
+                #user-input {
             width: 70% ;
             padding: 10px;
             font-size: 16px;
-            border: 1px solid #ddd;
+            border: 1px solid rgba(176, 130, 79, 0.3);
             border-radius: 6px;
+            background-color: var(--cream-light);
+            color: var(--text-body);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #user-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        #user-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(176, 130, 79, 0.18);
         }
 
         #send-button {
             padding: 10px 18px;
-            background-color: #b0824f;
-            color: antiquewhite;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: var(--cream-light);
             border: none;
             border-radius: 6px;
             cursor: pointer;
+            box-shadow: 0 3px 10px rgba(176, 130, 79, 0.3);
+            transition: background 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        #send-button:hover {
+            background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+            box-shadow: 0 5px 14px rgba(176, 130, 79, 0.4);
+        }
+
+        ::selection {
+            background: var(--accent-light);
+            color: var(--cream-light);
         }
     </style>
 </head>
